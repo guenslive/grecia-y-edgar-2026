@@ -271,7 +271,7 @@ body {
   font-weight: 700;
   letter-spacing: .02em;
   color: #fffafc;
-  background: linear-gradient(#fffafc 0 56%, #ffc6da 56%) 0 0 / 100% 1.1em;
+  background: linear-gradient(#fffaff 0 56%, #dccbf7 56%) 0 0 / 100% 1.1em;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -280,8 +280,8 @@ body {
     drop-shadow(calc(var(--px) * -1) 0 0 var(--tinta))
     drop-shadow(0 var(--px) 0 var(--tinta))
     drop-shadow(0 calc(var(--px) * -1) 0 var(--tinta))
-    drop-shadow(0 var(--px) 0 #d1477f)
-    drop-shadow(0 var(--px) 0 #b0356b)
+    drop-shadow(0 var(--px) 0 #b597e2)
+    drop-shadow(0 var(--px) 0 #8a6cc2)
     drop-shadow(0 var(--px) 0 var(--tinta));
   animation: caer-titulo 1.2s steps(8) both;
 }
@@ -306,7 +306,7 @@ body {
 .final__titulo::after { animation-delay: -.8s; }
 @keyframes titilar { 50% { transform: scale(.57); } }
 
-/* el subtítulo, en una cinta rosa con sus puntas dobladas hacia atrás; todo
+/* el subtítulo, en una cinta lila pastel con sus puntas dobladas hacia atrás; todo
    con el mismo contorno de tinta */
 .final__sub {
   position: relative;
@@ -328,17 +328,17 @@ body {
   top: calc(var(--px) * 2);
   bottom: calc(var(--px) * -2);
   width: calc(var(--px) * 9);
-  background: linear-gradient(#a8336a, #a8336a) 0 0 / 100% 100%;
+  background: linear-gradient(#9d82d6, #9d82d6) 0 0 / 100% 100%;
 }
 /* la punta izquierda, con su muesca en escalerita */
 .final__sub::before {
   left: calc(var(--px) * -7);
-  background-image: linear-gradient(to right, #c23f78 0 calc(100% - var(--px) * 4), #8e2456 0);
+  background-image: linear-gradient(to right, #b9a0e6 0 calc(100% - var(--px) * 4), #8a6cc2 0);
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 80%, var(--px) 80%, var(--px) 62%, calc(var(--px) * 2) 62%, calc(var(--px) * 2) 38%, var(--px) 38%, var(--px) 20%, 0 20%);
 }
 .final__sub::after {
   right: calc(var(--px) * -7);
-  background-image: linear-gradient(to left, #c23f78 0 calc(100% - var(--px) * 4), #8e2456 0);
+  background-image: linear-gradient(to left, #b9a0e6 0 calc(100% - var(--px) * 4), #8a6cc2 0);
   clip-path: polygon(0 0, 100% 0, 100% 20%, calc(100% - var(--px)) 20%, calc(100% - var(--px)) 38%, calc(100% - var(--px) * 2) 38%, calc(100% - var(--px) * 2) 62%, calc(100% - var(--px)) 62%, calc(100% - var(--px)) 80%, 100% 80%, 100% 100%, 0 100%);
 }
 .final__cinta {
@@ -348,9 +348,9 @@ body {
   padding: var(--px) calc(var(--px) * 5) calc(var(--px) * 1.5);
   font-size: clamp(17px, calc(var(--px) * 5.5), 30px);
   line-height: 1.25;
-  color: #fff6e8;
-  background: linear-gradient(#f07aa8 0 var(--px), #e05f93 0);
-  text-shadow: calc(var(--px) * .67) calc(var(--px) * .67) 0 #8e2456;
+  color: var(--tinta);
+  background: linear-gradient(#efe6fd 0 var(--px), #d4c1f2 0);
+  text-shadow: calc(var(--px) * .67) calc(var(--px) * .67) 0 #ece2fb;
 }
 
 /* el contador, como marcador de videojuego: una casilla oscura por unidad */
@@ -378,10 +378,10 @@ body {
   align-items: center;
   min-width: calc(var(--px) * 17);
   padding: calc(var(--px) * 1.5) calc(var(--px) * 2) var(--px);
-  background: rgba(43, 22, 49, .82);
+  background: rgba(60, 38, 100, .85);
   box-shadow:
     0 0 0 var(--px) var(--tinta),
-    inset 0 var(--px) 0 rgba(255, 198, 218, .22),
+    inset 0 var(--px) 0 rgba(220, 203, 247, .3),
     0 calc(var(--px) * 2) 0 0 rgba(58, 31, 61, .5);
 }
 .final__numero {
@@ -397,7 +397,7 @@ body {
   margin-top: calc(var(--px) * .67);
   font-size: clamp(11px, calc(var(--px) * 3.4), 17px);
   line-height: 1;
-  color: var(--sakura);
+  color: #dccbf7;
 }
 @keyframes caer-titulo {
   0% { opacity: 0; transform: translateY(calc(var(--px) * -8)); }
