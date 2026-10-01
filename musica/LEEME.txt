@@ -1,0 +1,30 @@
+NUESTRAS CANCIONES
+==================
+
+Cada canción lleva dos archivos, con exactamente estos nombres:
+
+  we-fell-in-love-in-october.mp3   ← girl in red
+  we-fell-in-love-in-october.lrc   ← su letra sincronizada
+
+  my-kind-of-woman.mp3             ← Mac DeMarco
+  my-kind-of-woman.lrc             ← su letra sincronizada
+
+(Si prefieres otros nombres, cámbialos en js/config.js, en el cartel "Canciones".)
+
+
+Formato de la letra (.lrc)
+--------------------------
+Es un archivo de texto normal. Cada línea empieza con el minuto y segundo
+en que se canta, entre corchetes, y después el texto:
+
+  [00:12.50] primera línea de la canción
+  [00:16.20] segunda línea
+  [00:21.00]
+  [00:25.80] ...
+
+- Una línea vacía (solo con el tiempo) se muestra como ♪ en los instrumentales.
+- Si toda la letra va adelantada o atrasada, agrega al inicio del archivo
+  [offset:+300]  (milisegundos; positivo = la letra aparece antes).
+
+Para probar solo el reproductor, entra a la página con ?saltar y toca el cartel
+"Canciones". Tocar una línea de la letra salta a ese momento de la canción.

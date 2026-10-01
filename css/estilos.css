@@ -1,0 +1,1336 @@
+/* Paleta y medidas base. --px lo ajusta main.js: son los píxeles CSS que mide
+   un "píxel" del mundo, para que el texto encaje en la misma rejilla. */
+:root {
+  --noche: #0f1433;
+  --ciruela: #3b2a5c;
+  --sakura: #f4a6c1;
+  --petalo: #ffe3ee;
+  --corteza: #5b3a2e;
+  --oro: #ffd27a;
+  --papel: #f6ead2;
+  --tinta: #3a1f3d;
+  --madera: #b87a44;
+  --madera-oscura: #3a2114;
+  --px: 4px;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--noche);
+}
+
+body {
+  font-family: "Pixelify Sans", ui-rounded, system-ui, sans-serif;
+  color: var(--petalo);
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+#escena {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+}
+
+.capa {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ---------- Intro: como el cuadro de diálogo de un videojuego ---------- */
+/* azul noche, con borde clarito por dentro y de tinta por fuera (las esquinas
+   recortadas); primero se abre el cuadro y luego se escribe el texto adentro */
+.intro {
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  width: max-content;
+  max-width: min(90vw, 34em);
+  margin: 0;
+  padding: calc(var(--px) * 3) calc(var(--px) * 5) calc(var(--px) * 3.5);
+  transform: translateX(-50%);
+  text-align: center;
+  text-wrap: balance;
+  font-size: clamp(18px, calc(var(--px) * 6), 38px);
+  line-height: 1.35;
+  font-weight: 500;
+  color: #fff6e8;
+  background: rgba(15, 20, 51, .9);
+  text-shadow: calc(var(--px) * .67) calc(var(--px) * .67) 0 #05071a;
+  box-shadow:
+    inset 0 0 0 var(--px) #c9b6f0,
+    inset 0 0 0 calc(var(--px) * 2) #090c24,
+    0 calc(var(--px) * -1) 0 0 var(--tinta),
+    0 var(--px) 0 0 var(--tinta),
+    calc(var(--px) * -1) 0 0 0 var(--tinta),
+    var(--px) 0 0 0 var(--tinta),
+    0 calc(var(--px) * 2.5) 0 0 rgba(5, 7, 26, .45);
+  transition: opacity .8s steps(6);
+  animation: abrir-cuadro .45s steps(4) both;
+}
+.intro:empty { display: none; }
+/* el cursor no ocupa lugar: se dibuja encima de lo que sigue */
+.intro .cursor { position: relative; }
+.intro .cursor::after {
+  content: "";
+  position: absolute;
+  left: .08em;
+  top: 0;
+  bottom: 0;
+  width: .42em;
+  background: var(--sakura);
+  box-shadow: calc(var(--px) * .67) calc(var(--px) * .67) 0 #05071a;
+  animation: parpadeo 1s steps(1) infinite;
+}
+/* lo que falta por escribirse: invisible, pero ya apartando su lugar */
+.intro__resto { visibility: hidden; }
+.intro.fuera { opacity: 0; }
+@keyframes abrir-cuadro { from { transform: translateX(-50%) scaleY(0); } }
+
+/* las pistas ("Toca la semilla" y la de abajo): un letrerito de papel con su
+   borde de tinta y una manita que toca, para que se lean sobre lo que haya detrás */
+.pista {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--px) * 2);
+  margin: 0;
+  padding: var(--px) calc(var(--px) * 4) var(--px) calc(var(--px) * 3);
+  font-size: clamp(16px, calc(var(--px) * 5.5), 28px);
+  line-height: 1.3;
+  color: var(--tinta);
+  background: #fff6e8;
+  white-space: nowrap;
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--tinta),
+    0 var(--px) 0 0 var(--tinta),
+    calc(var(--px) * -1) 0 0 0 var(--tinta),
+    var(--px) 0 0 0 var(--tinta),
+    inset 0 calc(var(--px) * -1) 0 #f6c8d9,
+    0 calc(var(--px) * 2.5) 0 0 rgba(15, 20, 51, .35);
+  transform: translate(-50%, 0);
+  animation: aparecer .8s steps(5) both, flotar 2.4s steps(4) .8s infinite;
+}
+.pista[hidden] { display: none; }
+.pista::before {
+  content: "";
+  flex: none;
+  /* la manita en píxeles enteros: 2 o 3 px de pantalla por cada uno suyo */
+  width: 20px;
+  height: 20px;
+  width: max(20px, round(down, calc(var(--px) * 6.67), 10px));
+  height: max(20px, round(down, calc(var(--px) * 6.67), 10px));
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' shape-rendering='crispEdges'%3E%3Cpath fill='%233a1f3d' d='M2 0h2v1H2zM1 1h1v1H1zM4 1h1v1H4zM1 2h1v1H1zM4 2h4v1H4zM1 3h1v1H1zM4 3h1v1H4zM7 3h3v1H7zM0 4h2v1H0zM4 4h1v1H4zM7 4h1v1H7zM9 4h1v1H9zM0 5h1v1H0zM2 5h1v1H2zM9 5h1v1H9zM0 6h1v1H0zM9 6h1v1H9zM1 7h1v1H1zM8 7h1v1H8zM2 8h1v1H2zM7 8h1v1H7zM2 9h6v1H2z'/%3E%3Cpath fill='%23ffffff' d='M2 1h2v1H2zM2 2h2v1H2zM2 3h2v1H2zM5 3h2v1H5zM2 4h2v1H2zM5 4h2v1H5zM8 4h1v1H8zM1 5h1v1H1zM3 5h6v1H3zM1 6h8v1H1zM2 7h6v1H2z'/%3E%3Cpath fill='%23ff8fb0' d='M3 8h4v1H3z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  animation: tocar 1s steps(1) infinite;
+}
+/* la de la semilla, con su piquito de papel que apunta hacia arriba, a la
+   semilla (su último renglón tapa el borde, para que quede unido al letrero) */
+.pista--semilla::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: calc(var(--px) * 7);
+  height: calc(var(--px) * 4);
+  margin-left: calc(var(--px) * -3.5);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 4' shape-rendering='crispEdges'%3E%3Cpath fill='%233a1f3d' d='M3 0h1v1H3zM2 1h1v1H2zM4 1h1v1H4zM1 2h1v1H1zM5 2h1v1H5zM0 3h1v1H0zM6 3h1v1H6z'/%3E%3Cpath fill='%23fff6e8' d='M3 1h1v1H3zM2 2h3v1H2zM1 3h5v1H1z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+.pista--abajo {
+  left: 50%;
+  top: auto;
+  bottom: calc(var(--px) * 7 + 12px);
+}
+@keyframes tocar { 50% { transform: translateY(calc(var(--px) * .67)); } }
+
+@keyframes parpadeo { 50% { opacity: .35; } }
+@keyframes aparecer { from { opacity: 0; transform: translate(-50%, 6px); } }
+@keyframes flotar { 50% { transform: translate(-50%, calc(var(--px) * -1)); } }
+
+/* ---------- Etiquetas de años ---------- */
+.etiquetas { position: absolute; inset: 0; }
+
+.etiqueta {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+/* cada año, en un letrerito de papel con borde de tinta: el número con su
+   sombrita rosa (como los logos de las historietas), una flor de cerezo
+   prendida en una esquina (un año a la izquierda y el otro a la derecha), la
+   nota en una cintita rosa y un piquito de papel que apunta a su rama */
+.etiqueta__caja {
+  position: absolute;
+  left: 0;
+  bottom: calc(var(--px) * 5);
+  transform: translateX(-50%);
+  display: grid;
+  justify-items: center;
+  gap: calc(var(--px) * 1.5);
+  padding: calc(var(--px) * 2.5) calc(var(--px) * 3.5) calc(var(--px) * 2);
+  background: #fff6e8;
+  color: var(--tinta);
+  white-space: nowrap;
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--tinta),
+    0 var(--px) 0 0 var(--tinta),
+    calc(var(--px) * -1) 0 0 0 var(--tinta),
+    var(--px) 0 0 0 var(--tinta),
+    inset 0 var(--px) 0 #ffffff,
+    0 calc(var(--px) * 2.5) 0 0 rgba(15, 20, 51, .35);
+  animation: brotar .5s steps(5) both;
+}
+/* la florecita, prendida en la esquina casi toda por fuera (para no tapar el
+   número) y en píxeles enteros: 2 o 3 px de pantalla por cada uno suyo */
+.etiqueta__caja::before {
+  --flor: 26px;
+  content: "";
+  position: absolute;
+  top: calc(var(--flor) * -.68);
+  left: calc(var(--flor) * -.68);
+  width: var(--flor);
+  height: var(--flor);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 13 13' shape-rendering='crispEdges'%3E%3Cpath fill='%233a1f3d' d='M5 0h1v1H5zM7 0h1v1H7zM4 1h1v1H4zM6 1h1v1H6zM8 1h1v1H8zM2 2h1v1H2zM4 2h1v1H4zM8 2h1v1H8zM10 2h1v1H10zM1 3h1v1H1zM3 3h2v1H3zM8 3h2v1H8zM11 3h1v1H11zM1 4h1v1H1zM4 4h2v1H4zM7 4h2v1H7zM11 4h1v1H11zM1 5h1v1H1zM11 5h1v1H11zM0 6h1v1H0zM12 6h1v1H12zM1 7h4v1H1zM8 7h4v1H8zM2 8h1v1H2zM6 8h1v1H6zM10 8h1v1H10zM1 9h1v1H1zM6 9h1v1H6zM11 9h1v1H11zM1 10h1v1H1zM6 10h1v1H6zM11 10h1v1H11zM2 11h2v1H2zM5 11h1v1H5zM7 11h1v1H7zM9 11h2v1H9zM4 12h1v1H4zM8 12h1v1H8z'/%3E%3Cpath fill='%23ff9fc0' d='M5 1h1v1H5zM7 1h1v1H7zM5 2h3v1H5zM2 3h1v1H2zM5 3h3v1H5zM10 3h1v1H10zM2 4h2v1H2zM9 4h2v1H9zM2 5h3v1H2zM8 5h3v1H8zM1 6h3v1H1zM9 6h3v1H9zM3 8h3v1H3zM7 8h3v1H7zM2 9h4v1H2zM7 9h4v1H7zM2 10h4v1H2zM7 10h4v1H7zM4 11h1v1H4zM8 11h1v1H8z'/%3E%3Cpath fill='%23ffd6e4' d='M6 4h1v1H6zM5 5h1v1H5zM7 5h1v1H7zM4 6h1v1H4zM8 6h1v1H8zM5 7h1v1H5zM7 7h1v1H7z'/%3E%3Cpath fill='%23ffd27a' d='M6 5h1v1H6zM5 6h3v1H5zM6 7h1v1H6z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+@supports (width: round(down, 10px, 1px)) {
+  .etiqueta__caja::before { --flor: max(26px, round(down, calc(var(--px) * 8.67), 13px)); }
+}
+.etiqueta:nth-child(even) .etiqueta__caja::before {
+  left: auto;
+  right: calc(var(--flor) * -.68);
+}
+/* piquito de papel que apunta a la rama (su primer renglón tapa el borde) */
+.etiqueta__caja::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: calc(var(--px) * 7);
+  height: calc(var(--px) * 4);
+  margin-left: calc(var(--px) * -3.5);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 4' shape-rendering='crispEdges'%3E%3Cpath fill='%233a1f3d' d='M0 0h1v1H0zM6 0h1v1H6zM1 1h1v1H1zM5 1h1v1H5zM2 2h1v1H2zM4 2h1v1H4zM3 3h1v1H3z'/%3E%3Cpath fill='%23fff6e8' d='M1 0h5v1H1zM2 1h3v1H2zM3 2h1v1H3z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+.etiqueta__anio {
+  font-family: "Press Start 2P", monospace;
+  font-size: calc(var(--px) * 8);
+  line-height: 1;
+  color: #b0356b;
+  text-shadow: var(--px) var(--px) 0 #ffc4d8;
+}
+.etiqueta__nota {
+  padding: calc(var(--px) * .5) calc(var(--px) * 2) calc(var(--px) * .75);
+  font-size: clamp(13px, calc(var(--px) * 4.5), 22px);
+  line-height: 1.1;
+  color: var(--tinta);
+  background: #ffc4d8;
+  box-shadow: inset 0 calc(var(--px) * -.67) 0 #f49ab9;
+}
+.etiqueta--disuelta .etiqueta__caja {
+  animation: disolver 1.1s steps(7) forwards;
+}
+@keyframes brotar {
+  0% { opacity: 0; transform: translate(-50%, calc(var(--px) * 4)) scale(.4); }
+  60% { opacity: 1; transform: translate(-50%, calc(var(--px) * -2)) scale(1.08); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+@keyframes disolver {
+  to { opacity: 0; transform: translate(-50%, calc(var(--px) * -10)) scale(.7); }
+}
+
+/* ---------- Título final ---------- */
+.final {
+  position: absolute;
+  left: 50%;
+  top: max(3vh, calc(var(--px) * 5));
+  width: min(94vw, 40em);
+  transform: translateX(-50%);
+  text-align: center;
+}
+/* el título como logo de videojuego: letras de dos tonos con contorno de tinta
+   y su grosor rosa abajo, para que no se pierda en el cielo; el 7, dorado,
+   y una estrellita que titila a cada lado */
+.final__titulo {
+  margin: 0;
+  font-size: clamp(34px, calc(var(--px) * 13), 88px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: #fffafc;
+  background: linear-gradient(#fffafc 0 56%, #ffc6da 56%) 0 0 / 100% 1.1em;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter:
+    drop-shadow(var(--px) 0 0 var(--tinta))
+    drop-shadow(calc(var(--px) * -1) 0 0 var(--tinta))
+    drop-shadow(0 var(--px) 0 var(--tinta))
+    drop-shadow(0 calc(var(--px) * -1) 0 var(--tinta))
+    drop-shadow(0 var(--px) 0 #d1477f)
+    drop-shadow(0 var(--px) 0 #b0356b)
+    drop-shadow(0 var(--px) 0 var(--tinta));
+  animation: caer-titulo 1.2s steps(8) both;
+}
+.final__num {
+  display: inline-block;
+  line-height: 1.1;
+  background: linear-gradient(#fff0b8 0 56%, #f7b23b 56%) 0 0 / 100% 1.1em;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.final__titulo::before,
+.final__titulo::after {
+  content: "";
+  display: inline-block;
+  width: calc(var(--px) * 7);
+  height: calc(var(--px) * 7);
+  margin: 0 calc(var(--px) * 4);
+  vertical-align: .12em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffd27a' d='M3 0h1v2H3zM2 2h1v1H2zM4 2h1v1H4zM0 3h2v1H0zM5 3h2v1H5zM2 4h1v1H2zM4 4h1v1H4zM3 5h1v2H3z'/%3E%3Cpath fill='%23fffaf0' d='M3 2h1v1H3zM2 3h3v1H2zM3 4h1v1H3z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  animation: titilar 1.6s steps(1) infinite;
+}
+.final__titulo::after { animation-delay: -.8s; }
+@keyframes titilar { 50% { transform: scale(.57); } }
+
+/* el subtítulo, en una cinta rosa con sus puntas dobladas hacia atrás; todo
+   con el mismo contorno de tinta */
+.final__sub {
+  position: relative;
+  display: inline-block;
+  max-width: calc(100% - var(--px) * 16);
+  margin: calc(var(--px) * 3) 0 0;
+  filter:
+    drop-shadow(var(--px) 0 0 var(--tinta))
+    drop-shadow(calc(var(--px) * -1) 0 0 var(--tinta))
+    drop-shadow(0 var(--px) 0 var(--tinta))
+    drop-shadow(0 calc(var(--px) * -1) 0 var(--tinta))
+    drop-shadow(0 var(--px) 0 rgba(58, 31, 61, .4));
+  animation: aparecer-centro 1s steps(6) .5s both;
+}
+.final__sub::before,
+.final__sub::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--px) * 2);
+  bottom: calc(var(--px) * -2);
+  width: calc(var(--px) * 9);
+  background: linear-gradient(#a8336a, #a8336a) 0 0 / 100% 100%;
+}
+/* la punta izquierda, con su muesca en escalerita */
+.final__sub::before {
+  left: calc(var(--px) * -7);
+  background-image: linear-gradient(to right, #c23f78 0 calc(100% - var(--px) * 4), #8e2456 0);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 80%, var(--px) 80%, var(--px) 62%, calc(var(--px) * 2) 62%, calc(var(--px) * 2) 38%, var(--px) 38%, var(--px) 20%, 0 20%);
+}
+.final__sub::after {
+  right: calc(var(--px) * -7);
+  background-image: linear-gradient(to left, #c23f78 0 calc(100% - var(--px) * 4), #8e2456 0);
+  clip-path: polygon(0 0, 100% 0, 100% 20%, calc(100% - var(--px)) 20%, calc(100% - var(--px)) 38%, calc(100% - var(--px) * 2) 38%, calc(100% - var(--px) * 2) 62%, calc(100% - var(--px)) 62%, calc(100% - var(--px)) 80%, 100% 80%, 100% 100%, 0 100%);
+}
+.final__cinta {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: var(--px) calc(var(--px) * 5) calc(var(--px) * 1.5);
+  font-size: clamp(17px, calc(var(--px) * 5.5), 30px);
+  line-height: 1.25;
+  color: #fff6e8;
+  background: linear-gradient(#f07aa8 0 var(--px), #e05f93 0);
+  text-shadow: calc(var(--px) * .67) calc(var(--px) * .67) 0 #8e2456;
+}
+
+/* el contador, como marcador de videojuego: una casilla oscura por unidad */
+.final__contador {
+  margin: calc(var(--px) * 4) auto 0;
+  animation: aparecer-centro 1s steps(6) 1s both;
+}
+.final__llevamos {
+  margin: 0 0 calc(var(--px) * 1.5);
+  font-size: clamp(13px, calc(var(--px) * 4.2), 21px);
+  line-height: 1;
+  color: #fff6e8;
+  text-shadow:
+    calc(var(--px) * .67) 0 0 var(--tinta), calc(var(--px) * -.67) 0 0 var(--tinta),
+    0 calc(var(--px) * .67) 0 var(--tinta), 0 calc(var(--px) * -.67) 0 var(--tinta),
+    calc(var(--px) * .67) calc(var(--px) * .67) 0 var(--tinta);
+}
+.final__marcador {
+  display: inline-flex;
+  gap: calc(var(--px) * 2.5);
+}
+.final__casilla {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: calc(var(--px) * 17);
+  padding: calc(var(--px) * 1.5) calc(var(--px) * 2) var(--px);
+  background: rgba(43, 22, 49, .82);
+  box-shadow:
+    0 0 0 var(--px) var(--tinta),
+    inset 0 var(--px) 0 rgba(255, 198, 218, .22),
+    0 calc(var(--px) * 2) 0 0 rgba(58, 31, 61, .5);
+}
+.final__numero {
+  font-family: "Press Start 2P", monospace;
+  font-weight: 400;
+  font-size: clamp(12px, calc(var(--px) * 5.34), 24px);
+  line-height: 1.3;
+  color: var(--oro);
+  text-shadow: 0 calc(var(--px) * .67) 0 #a8542a;
+  font-variant-numeric: tabular-nums;
+}
+.final__unidad {
+  margin-top: calc(var(--px) * .67);
+  font-size: clamp(11px, calc(var(--px) * 3.4), 17px);
+  line-height: 1;
+  color: var(--sakura);
+}
+@keyframes caer-titulo {
+  0% { opacity: 0; transform: translateY(calc(var(--px) * -8)); }
+  70% { opacity: 1; transform: translateY(var(--px)); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes aparecer-centro { from { opacity: 0; transform: translateY(calc(var(--px) * 2)); } }
+
+/* ---------- Zonas clicables sobre el lienzo ---------- */
+.zona-invisible {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  border-radius: 0;
+}
+.zona-invisible:focus { outline: none; }
+.zona-invisible:focus-visible {
+  outline: calc(var(--px) * .75) solid var(--oro);
+  outline-offset: var(--px);
+}
+
+.globo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  padding: calc(var(--px) * 2) calc(var(--px) * 3);
+  background: var(--papel);
+  color: var(--tinta);
+  font-size: clamp(14px, calc(var(--px) * 5), 24px);
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--tinta),
+    0 var(--px) 0 0 var(--tinta),
+    calc(var(--px) * -1) 0 0 0 var(--tinta),
+    var(--px) 0 0 0 var(--tinta);
+  animation: brotar-globo .4s steps(4) both;
+}
+@keyframes brotar-globo { from { opacity: 0; transform: translate(-50%, -80%); } }
+
+/* nubecitas de pensamiento (buzón, grabadora, maquinita): una nube esponjosa
+   con sus bolitas hacia lo que la piensa; la nube y las bolitas las dibuja ui.js */
+.nubecita {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.nubecita__nube,
+.nubecita__punto {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.nubecita__forma,
+.nubecita__punto {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.nubecita__forma { width: 100%; height: 100%; }
+/* primero la bolita chiquita, luego la mediana y al final brota la nube */
+.nubecita__nube {
+  transform-origin: var(--origen, 50% 100%);
+  animation: brotar-nube .45s steps(4) .24s both, flotar-nube 2.4s steps(2) .7s infinite;
+}
+.nubecita__punto { animation: brotar-punto .16s steps(2) both; }
+.nubecita__punto--mediana { animation-delay: .12s; }
+.nubecita__texto {
+  position: absolute;
+  color: var(--tinta);
+  font-size: clamp(13px, calc(var(--px) * 4.5), 20px);
+  line-height: 1.1;
+  text-align: center;
+  white-space: pre;
+}
+@keyframes brotar-nube { from { opacity: 0; transform: scale(.25); } }
+@keyframes brotar-punto { from { opacity: 0; transform: scale(0); } }
+@keyframes flotar-nube { 50% { transform: translateY(calc(var(--px) * -1)); } }
+
+/* ---------- Controles ---------- */
+.controles {
+  position: fixed;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  pointer-events: none;
+}
+.control {
+  pointer-events: auto;
+  width: calc(var(--px) * 11);
+  height: calc(var(--px) * 11);
+  min-width: 40px;
+  min-height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: rgba(15, 20, 51, .55);
+  color: var(--petalo);
+  cursor: pointer;
+  box-shadow:
+    0 calc(var(--px) * -.5) 0 0 rgba(255, 227, 238, .35),
+    0 calc(var(--px) * .5) 0 0 rgba(255, 227, 238, .35),
+    calc(var(--px) * -.5) 0 0 0 rgba(255, 227, 238, .35),
+    calc(var(--px) * .5) 0 0 0 rgba(255, 227, 238, .35);
+  opacity: .7;
+  transition: opacity .2s steps(2);
+}
+.control:hover, .control:focus-visible { opacity: 1; }
+.control:focus-visible { outline: 3px solid var(--oro); outline-offset: 3px; }
+.control svg { width: 56%; height: 56%; fill: currentColor; }
+.control .mute { display: none; }
+.control[aria-pressed="true"] .ondas { display: none; }
+.control[aria-pressed="true"] .mute { display: inline; }
+
+/* ---------- Ventana de los carteles ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.modal[hidden] { display: none; }
+.modal__fondo {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(15, 20, 51, .62);
+  background-image: conic-gradient(rgba(15, 20, 51, .35) 25%, transparent 0 50%, rgba(15, 20, 51, .35) 0 75%, transparent 0);
+  background-size: 4px 4px;
+  animation: fundir .35s steps(4) both;
+}
+.modal__panel {
+  --borde: 4px;
+  position: relative;
+  width: min(100%, 38rem);
+  max-height: min(84vh, 52rem);
+  overflow: auto;
+  padding: 44px clamp(20px, 5vw, 48px) 40px;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(122, 74, 42, .09) 1px, transparent 1.5px) 0 0 / 6px 6px,
+    var(--papel);
+  color: var(--tinta);
+  user-select: text;
+  box-shadow:
+    0 0 0 var(--borde) var(--madera),
+    0 0 0 calc(var(--borde) * 2) #8a5530,
+    0 0 0 calc(var(--borde) * 3) var(--madera-oscura),
+    calc(var(--borde) * 3) calc(var(--borde) * 4) 0 calc(var(--borde) * 3) rgba(10, 8, 30, .45);
+  animation: abrir .45s steps(6) both;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sakura) transparent;
+}
+.modal__panel:focus { outline: none; }
+@keyframes abrir {
+  0% { opacity: 0; transform: translateY(24px) scale(.86); }
+  60% { opacity: 1; transform: translateY(-4px) scale(1.02); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes fundir { from { opacity: 0; } }
+
+.modal__cerrar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  float: right;
+  margin: -28px -16px 0 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--sakura);
+  color: var(--tinta);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--tinta), 3px 3px 0 3px rgba(58, 31, 61, .35);
+}
+.modal__cerrar:hover { background: #f78fb3; }
+.modal__cerrar:focus-visible { outline: 3px solid var(--oro); outline-offset: 5px; }
+.modal__cerrar svg { width: 18px; height: 18px; fill: currentColor; }
+
+.modal__antetitulo {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  color: #a2466f;
+}
+.modal__antetitulo:empty { display: none; }
+.modal__titulo {
+  margin: 0 0 22px;
+  font-size: clamp(1.8rem, 5vw, 2.4rem);
+  line-height: 1.1;
+  font-weight: 700;
+  color: var(--tinta);
+  text-shadow: 3px 3px 0 rgba(244, 166, 193, .8);
+}
+.modal__cuerpo {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  max-width: 34em;
+}
+.modal__cuerpo p { margin: 0 0 1em; }
+.modal__cuerpo h3 { margin: 1.4em 0 .5em; font-size: 1.35rem; }
+.modal__cuerpo ol, .modal__cuerpo ul { margin: 0 0 1em; padding-left: 1.4em; }
+.modal__cuerpo li { margin-bottom: .45em; }
+.modal__cuerpo li::marker { color: #b0356b; font-weight: 700; }
+.modal__cuerpo .pendiente { color: #8a6a7a; }
+.modal__cuerpo .firma { margin-top: 1.6em; text-align: right; font-size: 1.3rem; }
+
+.fotos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+  margin: 1.2em 0 .4em;
+}
+.foto {
+  margin: 0;
+  padding: 8px 8px 10px;
+  background: #fffaf2;
+  box-shadow: 0 0 0 3px var(--tinta), 4px 4px 0 3px rgba(58, 31, 61, .25);
+  transform: rotate(var(--giro, -1.5deg));
+}
+.foto:nth-child(2n) { --giro: 1.8deg; }
+.foto:nth-child(3n) { --giro: -.6deg; }
+.foto img, .foto__vacia {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: #f0dcc8;
+}
+.foto__vacia {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  text-align: center;
+  font-size: .95rem;
+  color: #8a6a7a;
+  background:
+    repeating-linear-gradient(45deg, rgba(244, 166, 193, .18) 0 6px, transparent 6px 12px),
+    #f7e6da;
+}
+.foto figcaption {
+  margin-top: 8px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* ---------- La grabadora en primer plano ---------- */
+.radio-show { position: fixed; inset: 0; z-index: 30; overflow: hidden; }
+.radio-show.saliendo { animation: fundido-sale .3s both; }
+.radio-show__fondo {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(15, 20, 51, .78);
+  background-image: conic-gradient(rgba(15, 20, 51, .35) 25%, transparent 0 50%, rgba(15, 20, 51, .35) 0 75%, transparent 0);
+  background-size: 4px 4px;
+  animation: fundido .6s both;
+}
+.radio-show__escena {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 64px 12px 18px;
+}
+.radio-show__grabadora { position: relative; flex: none; will-change: transform; }
+.radio-show__cuerpo { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.radio-show__mueble {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, .45));
+}
+.radio-show__control {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: none;
+}
+.radio-show__control:focus { outline: none; }
+.radio-show__control:focus-visible { outline: 3px solid var(--oro); outline-offset: 2px; }
+/* la letra, abajo, como karaoke */
+.radio-show__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(94vw, 40rem);
+  min-height: 0;
+  flex: 0 1 auto;
+  opacity: 0;
+  transition: opacity .6s steps(4);
+}
+.radio-show.encendida .radio-show__info { opacity: 1; }
+.radio-show__cancion { margin: 0; color: var(--oro); font-size: clamp(15px, 3.6vw, 20px); text-align: center; }
+.radio-show__aviso { margin: 8px 0 0; color: #ffc4d6; font-size: .95rem; text-align: center; }
+.radio-show__aviso[hidden] { display: none; }
+.radio-show__letra {
+  width: 100%;
+  min-height: 5em;
+  max-height: 34vh;
+  margin: 10px 0 0;
+  padding: 0 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  text-align: center;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+}
+.radio-show__letra::-webkit-scrollbar { display: none; }
+.radio-show__letra li {
+  padding: .3em 0;
+  color: var(--petalo);
+  font-size: clamp(15px, 3.8vw, 20px);
+  line-height: 1.35;
+  opacity: .55;
+  cursor: pointer;
+  transition: opacity .3s, color .3s;
+}
+.radio-show__letra li:first-child { margin-top: 4em; }
+.radio-show__letra li:last-child { margin-bottom: 4em; }
+.radio-show__letra li.pasada { opacity: .32; }
+.radio-show__letra li.actual { opacity: 1; color: var(--oro); transform: scale(1.06); }
+.radio-show__letra li.radio-show__sin-letra { opacity: .8; cursor: default; }
+.radio-show__dedicatoria { margin: 10px 0 0; color: #ffc4d6; font-size: .95rem; text-align: center; }
+.radio-show__dedicatoria[hidden] { display: none; }
+.radio-show__cerrar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--sakura);
+  color: var(--tinta);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--tinta), 3px 3px 0 3px rgba(15, 20, 51, .4);
+}
+.radio-show__cerrar:hover { background: #f78fb3; }
+.radio-show__cerrar:focus-visible { outline: 3px solid var(--oro); outline-offset: 4px; }
+.radio-show__cerrar svg { width: 18px; height: 18px; fill: currentColor; }
+@media (prefers-reduced-motion: reduce) {
+  .radio-show__fondo { animation: none; }
+  .radio-show__letra li { transition: none; }
+}
+
+/* ---------- Historieta de "Cómo empezó" ---------- */
+.modal__panel--ancho { width: min(100%, 46rem); }
+.comic { margin: 0 0 1em; }
+.comic__vineta {
+  position: relative;
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--tinta), 6px 6px 0 4px rgba(58, 31, 61, .22);
+}
+.comic__vineta.entra { animation: vineta .35s steps(4) both; }
+@keyframes vineta { from { opacity: 0; transform: translateX(14px); } }
+.comic__lienzo {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.comic__globos { position: absolute; inset: 0; pointer-events: none; }
+.comic__globo {
+  position: absolute;
+  margin: 0;
+  width: max-content;
+  max-width: 48%;
+  padding: 5px 10px;
+  background: #fff;
+  color: var(--tinta);
+  font-size: clamp(.8rem, 2.4vw, 1.05rem);
+  line-height: 1.2;
+  text-align: center;
+  transform: translate(-50%, calc(-100% - 11px));
+  box-shadow: 0 0 0 3px var(--tinta);
+  animation: globo .3s steps(3) both;
+}
+.comic__globo::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 3px);
+  width: 10px;
+  height: 9px;
+  margin-left: -5px;
+  background: var(--tinta);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.comic__globo--grito {
+  background: #fff2a8;
+  font-weight: 700;
+  font-size: clamp(.9rem, 2.8vw, 1.2rem);
+}
+.comic__globo--piensa { border-radius: 999px; font-style: normal; color: #6b4a5a; }
+.comic__globo--piensa::after {
+  top: calc(100% + 5px);
+  width: 7px;
+  height: 7px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--tinta);
+  clip-path: none;
+}
+@keyframes globo { from { opacity: 0; transform: translate(-50%, calc(-100% - 4px)) scale(.6); } }
+.comic__texto {
+  min-height: 3.2em;
+  margin: 18px 0 0;
+  padding: 10px 14px;
+  background: #ffe9a8;
+  color: var(--tinta);
+  font-size: 1.15rem;
+  line-height: 1.45;
+  box-shadow: 0 0 0 3px var(--tinta);
+}
+.comic__nota {
+  margin: 12px 2px 0;
+  font-size: 1.12rem;
+  color: #6b4a5a;
+  animation: aparecer-centro .6s steps(4) both;
+}
+.comic__nota[hidden] { display: none; }
+.comic__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+}
+.comic__boton {
+  padding: 8px 14px;
+  border: 0;
+  background: #d8c7f6;
+  color: var(--tinta);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--tinta), 3px 3px 0 3px rgba(58, 31, 61, .25);
+}
+.comic__boton:hover { background: #c7aef0; }
+.comic__boton:disabled { opacity: .4; cursor: default; }
+.comic__boton:focus-visible { outline: 3px solid var(--oro); outline-offset: 4px; }
+.comic__boton--siguiente.lista { background: var(--sakura); animation: latido 1.2s steps(2) infinite; }
+@keyframes latido { 50% { transform: translateY(-2px); } }
+.comic__cuenta { color: #6b4a5a; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.comic__boton { white-space: nowrap; }
+@media (max-width: 480px) {
+  .comic__boton { padding: 6px 10px; font-size: .95rem; }
+  .comic__texto { font-size: 1.05rem; }
+}
+
+/* ---------- Historietas: vuelan desde su cartel y se abren como libro ---------- */
+.libro-show { position: fixed; inset: 0; z-index: 30; }
+.libro-show.saliendo { animation: fundido-sale .3s both; }
+.libro-show__fondo {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(15, 20, 51, .74);
+  background-image: conic-gradient(rgba(15, 20, 51, .35) 25%, transparent 0 50%, rgba(15, 20, 51, .35) 0 75%, transparent 0);
+  background-size: 4px 4px;
+  animation: fundido .6s both;
+}
+/* el libro: la página con la historieta y, encima, la portada (mismo tamaño) */
+.libro-show__libro {
+  position: absolute;
+  left: 0;
+  top: 0;
+  perspective: 1800px;
+  will-change: transform;
+}
+/* la página es el interior de la misma revista: marco del color de su portada
+   con su trama de puntitos, el lomo con puntadas a la izquierda, el grosor de
+   las hojas, y adentro el papel con la historieta (--p: un píxel de la revista) */
+.libro-show__hoja {
+  --hoja: #fbf6ea;
+  position: absolute;
+  inset: 0;
+  padding: calc(var(--p) * 4) calc(var(--p) * 4) calc(var(--p) * 4) calc(var(--p) * 7);
+  perspective: 1600px;
+  background:
+    linear-gradient(var(--hoja), var(--hoja)) content-box,
+    repeating-linear-gradient(to bottom, var(--tema-punto) 0 var(--p), transparent 0 calc(var(--p) * 6)) var(--p) calc(var(--p) * 3) / var(--p) 100% no-repeat,
+    linear-gradient(var(--tema-oscuro), var(--tema-oscuro)) 0 0 / calc(var(--p) * 3) 100% no-repeat,
+    conic-gradient(from 270deg at var(--p) var(--p), var(--tema-punto) 90deg, transparent 0) var(--p) var(--p) / calc(var(--p) * 3) calc(var(--p) * 3),
+    var(--tema);
+  color: var(--tinta);
+  user-select: text;
+  box-shadow:
+    0 0 0 var(--p) var(--tinta),
+    calc(var(--p) * 3) calc(var(--p) * 3) 0 0 #e8dcc4,
+    calc(var(--p) * 3) calc(var(--p) * 3) 0 var(--p) var(--tinta),
+    0 18px 40px rgba(0, 0, 0, .45);
+}
+.libro-show__papel { position: relative; display: flow-root; }
+.libro-show__logo {
+  display: block;
+  max-width: 100%;
+  margin: calc(var(--p) * 2) auto calc(var(--p) * 4);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(var(--p) var(--p) 0 var(--tema-oscuro));
+}
+/* la portada gira sobre su lomo, con su frente y su reverso, y destapa la página */
+.libro-show__tapa {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform .95s cubic-bezier(.3, .7, .25, 1), opacity .3s .65s;
+  pointer-events: none;
+}
+.libro-show__tapa.abierta { transform: rotateY(-180deg); opacity: 0; }
+.libro-show__frente,
+.libro-show__dorso {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+.libro-show__frente {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.libro-show__dorso {
+  transform: rotateY(180deg);
+  background:
+    conic-gradient(from 270deg at var(--p) var(--p), var(--tema-punto) 90deg, transparent 0) var(--p) var(--p) / calc(var(--p) * 3) calc(var(--p) * 3),
+    var(--tema);
+  box-shadow: inset 0 0 0 var(--p) var(--tinta);
+}
+/* la hoja que se voltea al cambiar de viñeta */
+.libro-show__vuelta {
+  position: absolute;
+  z-index: 3;
+  background: var(--hoja);
+  backface-visibility: hidden;
+  box-shadow: 0 0 0 1px rgba(58, 31, 61, .18);
+  pointer-events: auto;
+}
+.libro-show .comic__vineta.entra { animation: none; }
+/* la historieta, con tinta y sombras del color de la revista */
+.libro-show .comic { margin: 0 calc(var(--p) * 2) calc(var(--p) * 3); }
+.libro-show .comic__vineta {
+  box-shadow: 0 0 0 var(--p) var(--tinta), calc(var(--p) * 2) calc(var(--p) * 2) 0 var(--p) var(--tema-oscuro);
+}
+.libro-show .comic__texto {
+  min-height: 4.6em;
+  margin-top: calc(var(--p) * 5);
+  box-shadow: 0 0 0 var(--p) var(--tinta), var(--p) var(--p) 0 var(--p) var(--tema-oscuro);
+}
+.libro-show .comic__nota { color: var(--tema-oscuro); }
+/* la nota aparta su lugar desde antes, para que la página no crezca */
+.libro-show .comic__nota[hidden] { display: block; visibility: hidden; }
+/* los botones, afuera del libro: abajo, sobre el fondo oscuro */
+.libro-show__nav {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  transform: translateX(-50%);
+  transition: opacity .35s steps(3);
+}
+.libro-show__nav.oculta { opacity: 0; pointer-events: none; }
+.libro-show .comic__boton {
+  background: #fff6e8;
+  box-shadow: 0 0 0 var(--p) var(--tinta), var(--p) var(--p) 0 var(--p) var(--tema-oscuro);
+}
+.libro-show .comic__boton:hover { background: var(--tema-claro); }
+.libro-show .comic__boton--siguiente.lista { background: var(--tema); }
+.libro-show .comic__cuenta {
+  font-family: "Press Start 2P", monospace;
+  font-size: .62rem;
+  color: var(--tema-claro);
+  text-shadow: 2px 2px 0 var(--tinta);
+}
+.libro-show__cerrar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--sakura);
+  color: var(--tinta);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--tinta), 3px 3px 0 3px rgba(15, 20, 51, .4);
+}
+.libro-show__cerrar:hover { background: #f78fb3; }
+.libro-show__cerrar:focus-visible { outline: 3px solid var(--oro); outline-offset: 4px; }
+.libro-show__cerrar svg { width: 18px; height: 18px; fill: currentColor; }
+/* calcomanías pegadas en la revista: en la orilla del marco y en la esquina de la viñeta */
+.libro-show .calco {
+  position: absolute;
+  z-index: 2;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  transform: rotate(var(--giro, 0deg));
+  pointer-events: none;
+}
+.libro-show .calco.pega { animation: pegar-calco .35s steps(4) both; }
+@media (prefers-reduced-motion: reduce) {
+  .libro-show__fondo, .libro-show .calco.pega { animation: none; }
+}
+
+/* ---------- Minijuego de las razones (en la pantalla de la maquinita) ---------- */
+.juego { position: absolute; inset: 0; container-type: size; }
+.juego__lienzo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+  cursor: pointer;
+}
+.juego__carta {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(88%, 30rem);
+  max-height: 92%;
+  overflow: auto;
+  padding: 4cqh 4cqw;
+  background: #fff8ec;
+  color: var(--tinta);
+  text-align: center;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 3px var(--tinta), 4px 4px 0 3px rgba(15, 20, 51, .35);
+}
+.juego__carta[hidden] { display: none; }
+.juego__carta.entra { animation: carta .3s steps(3) both; }
+@keyframes carta { from { opacity: 0; transform: translate(-50%, -50%) scale(.7); } }
+.juego .juego__antetitulo { margin: 0 0 .4em; color: #b0356b; font-weight: 700; font-size: clamp(10px, 3.6cqw, 15px); letter-spacing: .04em; }
+.juego .juego__razon { margin: 0 0 .7em; font-size: clamp(11px, 4.3cqw, 18px); line-height: 1.35; }
+.juego__botones { display: flex; flex-wrap: wrap; justify-content: center; gap: .7em; }
+.juego .juego__boton { padding: .35em .8em; font-size: clamp(10px, 3.8cqw, 16px); }
+.juego .juego__nota { margin: .8em 0 0; font-size: clamp(9px, 3.2cqw, 13px); color: #6b4a5a; }
+.juego .juego__lista { margin: 0 0 .8em; padding-left: 1.5em; text-align: left; font-size: clamp(10px, 3.8cqw, 16px); line-height: 1.35; }
+.juego .juego__lista li { margin-bottom: .4em; }
+.juego .juego__lista li::marker { color: #b0356b; font-weight: 700; }
+
+/* ---------- La maquinita en primer plano ---------- */
+.arcade-show { position: fixed; inset: 0; z-index: 30; overflow: hidden; }
+.arcade-show.saliendo { animation: fundido-sale .3s both; }
+.arcade-show__fondo {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(15, 20, 51, .74);
+  background-image: conic-gradient(rgba(15, 20, 51, .35) 25%, transparent 0 50%, rgba(15, 20, 51, .35) 0 75%, transparent 0);
+  background-size: 4px 4px;
+  animation: fundido .6s both;
+}
+.arcade-show__maquina { position: absolute; left: 50%; top: 50%; will-change: transform; }
+.arcade-show__mueble {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, .45));
+}
+.arcade-show__pantalla { position: absolute; overflow: hidden; background: #0e0b10; }
+/* apagada hasta que "se enciende" como tele vieja */
+.arcade-show__pantalla .juego { visibility: hidden; }
+.arcade-show__pantalla.encendida .juego { visibility: visible; animation: encender .5s steps(6) both; }
+@keyframes encender {
+  0% { transform: scale(1, .02); filter: brightness(4); }
+  45% { transform: scale(1, .02); filter: brightness(3); }
+  100% { transform: none; filter: none; }
+}
+.arcade-show__control {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.arcade-show__control:focus { outline: none; }
+.arcade-show__control:focus-visible { outline: 3px solid var(--oro); outline-offset: 2px; }
+.arcade-show__cerrar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--sakura);
+  color: var(--tinta);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--tinta), 3px 3px 0 3px rgba(15, 20, 51, .4);
+}
+.arcade-show__cerrar:hover { background: #f78fb3; }
+.arcade-show__cerrar:focus-visible { outline: 3px solid var(--oro); outline-offset: 4px; }
+.arcade-show__cerrar svg { width: 18px; height: 18px; fill: currentColor; }
+@media (prefers-reduced-motion: reduce) {
+  .arcade-show__fondo, .arcade-show__pantalla.encendida .juego { animation: none; }
+}
+
+/* ---------- La carta en primer plano ---------- */
+.carta-show {
+  --w: min(92vw, 38rem);
+  --h: min(84vh, 46rem);
+  --hoja: #fbf6ea;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+}
+@supports (height: 1dvh) {
+  .carta-show { --h: min(84dvh, 46rem); }
+}
+.carta-show.saliendo { animation: fundido-sale .3s both; }
+@keyframes fundido-sale { to { opacity: 0; } }
+.carta-show__fondo {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(15, 20, 51, .74);
+  background-image: conic-gradient(rgba(15, 20, 51, .35) 25%, transparent 0 50%, rgba(15, 20, 51, .35) 0 75%, transparent 0);
+  background-size: 4px 4px;
+  animation: fundido .6s both;
+}
+@keyframes fundido { from { opacity: 0; } }
+.carta-show__sobre {
+  position: absolute;
+  left: 0;
+  top: 0;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+/* la hoja doblada en tres que se desdobla */
+.carta-show__pliegues,
+.carta-show__hoja {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--w);
+  height: var(--h);
+  margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
+}
+.carta-show__pliegues { perspective: 1600px; opacity: 0; pointer-events: none; }
+.carta-show__pliegues.entra { animation: pliegue-entra .35s ease-out both; }
+@keyframes pliegue-entra {
+  from { opacity: 0; transform: translateY(50px) scale(.6); }
+  to { opacity: 1; transform: none; }
+}
+.carta-show__pliegue {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: var(--hoja);
+  transform-style: preserve-3d;
+  transform-origin: top;
+}
+.carta-show__pliegue::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(58, 31, 61, .3), transparent 65%);
+  transition: opacity .5s .45s;
+}
+.carta-show__pliegue.uno { top: 0; height: calc(100% / 3); box-shadow: 0 18px 40px rgba(0, 0, 0, .35); }
+.carta-show__pliegue.uno::after { background: linear-gradient(transparent 70%, rgba(58, 31, 61, .2)); }
+.carta-show__pliegue.dos {
+  top: calc(100% / 3);
+  height: calc(100% / 3);
+  transform: rotateX(-178deg);
+  transition: transform .5s cubic-bezier(.3, .7, .25, 1);
+}
+.carta-show__pliegue.tres {
+  top: 100%;
+  height: 100%;
+  transform: rotateX(178deg);
+  transition: transform .5s cubic-bezier(.3, .7, .25, 1) .45s;
+}
+.carta-show__pliegues.abierta .dos,
+.carta-show__pliegues.abierta .tres { transform: none; }
+.carta-show__pliegues.abierta .carta-show__pliegue::after { opacity: 0; }
+/* la hoja ya abierta, donde se escribe el texto */
+.carta-show__hoja {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(22px, 5vw, 46px) clamp(20px, 5vw, 48px);
+  background: var(--hoja);
+  color: #2a2224;
+  font-family: "Special Elite", "Courier New", monospace;
+  font-size: clamp(.95rem, 2.6vw, 1.12rem);
+  line-height: 1.75;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .45);
+  user-select: text;
+}
+.carta-show__hoja[hidden] { display: none; }
+.carta-show__hoja p { margin: 0 0 1.15em; white-space: pre-wrap; }
+.carta-show__hoja .carta-show__despedida,
+.carta-show__hoja .carta-show__firma { text-align: right; }
+/* calcomanías pegadas en la hoja: Kuromi en la esquina y unas al final */
+.carta-show__hoja .calco {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  transform: rotate(var(--giro, 0deg));
+}
+.carta-show__hoja .calco--esquina { float: right; margin: -8px -12px 6px 10px; --giro: 7deg; }
+/* las de en medio, a un lado de su párrafo; se pegan cuando empieza a escribirse */
+.carta-show__hoja .calco--flota { margin-top: 2px; margin-bottom: 6px; animation: pegar-calco .35s steps(4) both; }
+.carta-show__hoja .calco--der { float: right; margin-right: -8px; margin-left: 12px; }
+.carta-show__hoja .calco--izq { float: left; margin-left: -8px; margin-right: 12px; }
+.carta-show__calcos {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+.carta-show__calcos .calco { animation: pegar-calco .35s steps(4) both; }
+@keyframes pegar-calco {
+  from { opacity: 0; transform: scale(1.7) rotate(calc(var(--giro, 0deg) - 12deg)); }
+}
+.carta-show__cursor {
+  display: inline-block;
+  width: .55em;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: -.15em;
+  background: #2a2224;
+  animation: parpadeo-cursor 1s steps(1) infinite;
+}
+@keyframes parpadeo-cursor { 50% { opacity: 0; } }
+.carta-show__pista {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + var(--h) / 2 + 10px);
+  margin: 0;
+  color: var(--petalo);
+  text-align: center;
+  font-size: .95rem;
+  animation: aparecer-centro .6s steps(4) both;
+}
+.carta-show__pista[hidden] { display: none; }
+.carta-show__cerrar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--sakura);
+  color: var(--tinta);
+  cursor: pointer;
+  box-shadow: 0 0 0 3px var(--tinta), 3px 3px 0 3px rgba(15, 20, 51, .4);
+}
+.carta-show__cerrar:hover { background: #f78fb3; }
+.carta-show__cerrar:focus-visible { outline: 3px solid var(--oro); outline-offset: 4px; }
+.carta-show__cerrar svg { width: 18px; height: 18px; fill: currentColor; }
+@media (prefers-reduced-motion: reduce) {
+  .carta-show__fondo, .carta-show__pista, .carta-show__cursor, .carta-show__hoja .calco { animation: none; }
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .comic__boton--siguiente.lista { animation: none; }
+}
+
+/* ---------- Cargando ---------- */
+.cargando {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  background: var(--noche);
+  color: var(--sakura);
+  font-size: 20px;
+  transition: opacity .6s steps(5);
+}
+.cargando span::after { content: "..."; animation: parpadeo 1s steps(1) infinite; }
+.cargando.fuera { opacity: 0; pointer-events: none; }
+
+@media (max-aspect-ratio: 3/4) {
+  .intro { top: 6%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pista, .pista::before, .intro, .intro .cursor::after, .final__titulo::before, .final__titulo::after { animation: none; }
+}

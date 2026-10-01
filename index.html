@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1433">
+  <!-- es un regalo privado: que los buscadores no la indexen -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>7 años</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7' shape-rendering='crispEdges'%3E%3Cpath fill='%23f4a6c1' d='M2 0h3v1H2zM1 1h5v1H1zM0 2h7v2H0zM1 4h5v1H1zM2 5h3v1H2z'/%3E%3Cpath fill='%23ffe3ee' d='M2 1h1v1H2zM1 2h1v1H1z'/%3E%3Cpath fill='%23b0356b' d='M3 3h1v1H3z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Press+Start+2P&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script src="js/config.js"></script>
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <canvas id="escena" aria-hidden="true"></canvas>
+
+  <div id="capa" class="capa">
+    <p id="intro" class="intro" aria-live="polite"></p>
+    <button id="semilla-btn" class="zona-invisible" type="button" aria-label="Plantar la semilla" hidden></button>
+    <p id="pista" class="pista pista--semilla" hidden></p>
+
+    <div id="etiquetas" class="etiquetas" aria-hidden="true"></div>
+
+    <header id="final" class="final" hidden>
+      <h1 id="final-titulo" class="final__titulo"></h1>
+      <p class="final__sub"><span id="final-sub" class="final__cinta"></span></p>
+      <div id="final-contador" class="final__contador"></div>
+    </header>
+
+    <div id="zonas-carteles"></div>
+    <button id="corazon-btn" class="zona-invisible" type="button" aria-label="Corazón tallado en el tronco" hidden></button>
+    <button id="pareja-btn" class="zona-invisible" type="button" aria-label="Darles un besito a la pareja" hidden></button>
+    <button id="buzon-btn" class="zona-invisible" type="button" aria-label="Buzón: hay una carta para ti" hidden></button>
+    <p id="pista-carteles" class="pista pista--abajo" hidden></p>
+    <p id="globo" class="globo" hidden></p>
+    <div id="nubes"></div>
+  </div>
+
+  <div class="controles">
+    <button id="btn-repetir" class="control" type="button" aria-label="Ver desde el principio" title="Ver desde el principio">
+      <svg viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"><path d="M2 0h4v1H2zM7 0h1v1H7zM1 1h1v1H1zM6 1h2v1H6zM0 2h1v1H0zM5 2h3v1H5zM0 3h1v3H0zM8 4h1v2H8zM1 6h1v1H1zM7 6h1v1H7zM2 7h5v1H2z"/></svg>
+    </button>
+    <button id="btn-sonido" class="control" type="button" aria-label="Silenciar" aria-pressed="false" title="Sonido">
+      <svg viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true">
+        <path d="M1 3h2v3H1zM3 2h1v5H3zM4 1h1v7H4z"/>
+        <path class="ondas" d="M6 3h1v3H6zM7 2h1v1H7zM7 6h1v1H7zM8 3h1v3H8z"/>
+        <path class="mute" d="M6 2h1v1H6zM7 3h1v1H7zM8 4h1v1H8zM6 6h1v1H6zM8 2h1v1H8zM6 4h1v1H6zM8 6h1v1H8zM7 5h1v1H7z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal__fondo" data-cerrar></div>
+    <article class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <button class="modal__cerrar" type="button" aria-label="Cerrar" data-cerrar>
+        <svg viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h2v1H0zM1 1h2v1H1zM2 2h3v3H2zM4 1h2v1H4zM5 0h2v1H5zM1 5h2v1H1zM0 6h2v1H0zM4 5h2v1H4zM5 6h2v1H5z"/></svg>
+      </button>
+      <p id="modal-antetitulo" class="modal__antetitulo"></p>
+      <h2 id="modal-titulo" class="modal__titulo"></h2>
+      <div id="modal-cuerpo" class="modal__cuerpo"></div>
+    </article>
+  </div>
+
+  <div id="cargando" class="cargando"><span>preparando la tierra</span></div>
+  <noscript><p class="cargando">Esta página necesita JavaScript para crecer.</p></noscript>
+</body>
+</html>
